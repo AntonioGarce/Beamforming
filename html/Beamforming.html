@@ -1,0 +1,612 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Beamforming</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-03-21"><meta name="DC.source" content="Beamforming.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Copyright Notice</a></li><li><a href="#2">Simulation parameters</a></li><li><a href="#3">Generate Domain</a></li><li><a href="#4">Output properties</a></li><li><a href="#5">Animate</a></li></ul></div><h2>Copyright Notice<a name="1"></a></h2><p>Copyright (c) 2015, Mehmet E. Yavuz All rights reserved.</p><p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p><pre>   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in
+     the documentation and/or other materials provided with the distribution</pre><p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p><pre class="codeinput">clear <span class="string">all</span>; clc;
+set(0,<span class="string">'defaultFigureColor'</span>,[1 1 1])
+</pre><h2>Simulation parameters<a name="2"></a></h2><pre class="codeinput">freq   = 1e9; <span class="comment">% Hz</span>
+c      = 3e8; <span class="comment">% free space speed</span>
+lambda = c/freq;
+T      = 1/freq;
+omega  = 2*pi*freq;
+k      = 2*pi/lambda;
+
+Ns = 30;  <span class="comment">% Number of samples per wavelength</span>
+ds = lambda/Ns; <span class="comment">% Spatial Discretization</span>
+
+Nt = 35;  <span class="comment">% Number of time samples per period</span>
+dt = T/Nt; <span class="comment">% Temporal discretization</span>
+t  = 0:dt:(1*T);  <span class="comment">% Increase the number of periods here for longer simulations</span>
+
+R = (0*lambda):ds:(8*lambda);
+Ntheta = 240; <span class="comment">% Number of angular discretization</span>
+dtheta = 2*pi/Ntheta;
+
+theta = 0:dtheta:(2*pi);
+
+deltaAll=0:dtheta:2*pi;
+</pre><h2>Generate Domain<a name="3"></a></h2><pre class="codeinput">x=R.'*cos(theta);
+y=R.'*sin(theta);
+</pre><h2>Output properties<a name="4"></a></h2><pre class="codeinput">outFname=<span class="string">'PhasedArray.avi'</span>;
+isVideOn =0;
+<span class="keyword">if</span> (isVideOn == 1)
+    mov = avifile(outFname,<span class="string">'fps'</span>,8,<span class="string">'Compression'</span>,<span class="string">'None'</span>);
+<span class="keyword">end</span>
+
+teal = [ 0 0.5 0.5]; <span class="comment">% maps for unconventional coloring</span>
+origBrownColor=[114/256 70/256 43/256];
+</pre><h2>Animate<a name="5"></a></h2><pre class="codeinput">itx = 1; <span class="comment">% For naming tags</span>
+<span class="comment">% for ps=1:length(deltaAll) % Sweep through angles</span>
+<span class="keyword">for</span> ps=1:1 <span class="comment">% Sweep through angles</span>
+
+    delta=deltaAll(ps);
+
+<span class="comment">%     for it=1:length(t) % Sweep through time</span>
+    <span class="keyword">for</span> it=1:1 <span class="comment">% Sweep through time</span>
+</pre><pre class="codeinput">        <span class="comment">% --- First for d=lambda/2 --------------------</span>
+        d = lambda/2;
+        r1y=0;   r1x=-3*d;
+        r2y=0;   r2x=-2*d;
+        r3y=0;   r3x=-d;
+        r4y=0;   r4x=0;
+        r5y=0;   r5x=d;
+        r6y=0;   r6x=2*d;
+        r7y=0;   r7x=3*d;
+
+        <span class="keyword">for</span> ix=1:length(R)
+            <span class="keyword">for</span> iy=1:length(theta)
+                R1=sqrt(  (x(ix,iy)-r1x)^2 + (y(ix,iy)-r1y)^2  );
+                E1(ix,iy) = cos(omega * t(it) - k*R1 + delta*-3)  ;
+
+                R2=sqrt(  (x(ix,iy)-r2x)^2 + (y(ix,iy)-r2y)^2  );
+                E2(ix,iy) = cos(omega * t(it) - k*R2 + delta*-2)  ;
+
+                R3=sqrt(  (x(ix,iy)-r3x)^2 + (y(ix,iy)-r3y)^2  );
+                E3(ix,iy) = cos(omega * t(it) - k*R3 + delta*-1)  ;
+
+                R4=sqrt(  (x(ix,iy)-r4x)^2 + (y(ix,iy)-r4y)^2  );
+                E4(ix,iy) = cos(omega * t(it) - k*R4 + delta*0)  ;
+
+                R5=sqrt(  (x(ix,iy)-r5x)^2 + (y(ix,iy)-r5y)^2  );
+                E5(ix,iy) = cos(omega * t(it) - k*R5 + delta*1)  ;
+
+                R6=sqrt(  (x(ix,iy)-r6x)^2 + (y(ix,iy)-r6y)^2  );
+                E6(ix,iy) = cos(omega * t(it) - k*R6 + delta*2)  ;
+
+                R7=sqrt(  (x(ix,iy)-r7x)^2 + (y(ix,iy)-r7y)^2  );
+                E7(ix,iy) = cos(omega * t(it) - k*R7 + delta*3)  ;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+           E=E1+E2+E3+E4+E5+E6+E7;
+        <span class="comment">% -----------------------------------------------------------------</span>
+
+        <span class="comment">% --- First for d=lambda/2 --------------------</span>
+        d = lambda/4;
+        r1y=0;   r1x=-3*d;
+        r2y=0;   r2x=-2*d;
+        r3y=0;   r3x=-d;
+        r4y=0;   r4x=0;
+        r5y=0;   r5x=d;
+        r6y=0;   r6x=2*d;
+        r7y=0;   r7x=3*d;
+
+        <span class="keyword">for</span> ix=1:length(R)
+            <span class="keyword">for</span> iy=1:length(theta)
+                R1=sqrt(  (x(ix,iy)-r1x)^2 + (y(ix,iy)-r1y)^2  );
+                E1(ix,iy) = cos(omega * t(it) - k*R1 + delta*-3)  ;
+
+                R2=sqrt(  (x(ix,iy)-r2x)^2 + (y(ix,iy)-r2y)^2  );
+                E2(ix,iy) = cos(omega * t(it) - k*R2 + delta*-2)  ;
+
+                R3=sqrt(  (x(ix,iy)-r3x)^2 + (y(ix,iy)-r3y)^2  );
+                E3(ix,iy) = cos(omega * t(it) - k*R3 + delta*-1)  ;
+
+                R4=sqrt(  (x(ix,iy)-r4x)^2 + (y(ix,iy)-r4y)^2  );
+                E4(ix,iy) = cos(omega * t(it) - k*R4 + delta*0)  ;
+
+                R5=sqrt(  (x(ix,iy)-r5x)^2 + (y(ix,iy)-r5y)^2  );
+                E5(ix,iy) = cos(omega * t(it) - k*R5 + delta*1)  ;
+
+                R6=sqrt(  (x(ix,iy)-r6x)^2 + (y(ix,iy)-r6y)^2  );
+                E6(ix,iy) = cos(omega * t(it) - k*R6 + delta*2)  ;
+
+                R7=sqrt(  (x(ix,iy)-r7x)^2 + (y(ix,iy)-r7y)^2  );
+                E7(ix,iy) = cos(omega * t(it) - k*R7 + delta*3)  ;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        E2all=E1+E2+E3+E4+E5+E6+E7;
+        <span class="comment">% -----------------------------------------------------------------</span>
+
+        <span class="comment">%</span>
+        f1=figure (10); clf; set(gcf,<span class="string">'Color'</span>,[1 1 1]); Fs=10;
+        sp1=subplot(1,2,1); set(gca,<span class="string">'FontSize'</span>,Fs);
+        d = lambda/2;
+        A = [1 1 1 1 1 1 1]; <span class="comment">% (Relative) Amplitude of each array antenna</span>
+        Fa=zeros(1,length(theta));
+        <span class="keyword">for</span> i=0:(7-1)
+            temp =  (A(i+1) * exp(-1i*i*delta + 1i*k*(i*d-3*d)*cos(theta)));
+            Fa = Fa + temp;
+        <span class="keyword">end</span>
+        <span class="comment">%    Fa=abs(Fa).^2;</span>
+        Fa=abs(Fa);
+        kk=polar(theta,-Fa/max(Fa));   hold <span class="string">on</span>; axis <span class="string">off</span>
+
+        <span class="comment">% Remove ticks</span>
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'210'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'240'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'270'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'300'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'330'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'180'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'150'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'120'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'90'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'60'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'30'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'0'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+</pre><img vspace="5" hspace="5" src="Beamforming_01.png" alt=""> <pre class="codeinput">        pcolor(x/max(max(x)),y/max(max(y)),E); shading <span class="string">interp</span>;
+        pbaspect([1 1 1]); <span class="comment">%axis off;</span>
+        ylim([0 1])
+
+        kk=polar(theta,-Fa/max(Fa),<span class="string">'k'</span>);  set(kk,<span class="string">'LineWidth'</span>,2);  hold <span class="string">on</span>;
+        set(sp1,<span class="string">'Position'</span>,[0.0100000    0.1100    0.47    0.850])
+        xlabel([<span class="string">'Antenna separation: d=\lambda/2'</span>],<span class="string">'FontSize'</span>,Fs+2,<span class="string">'FontName'</span>,<span class="string">'Century Gothic'</span>)
+        text(-0.85,1.15,[<span class="string">'{\bf Relative phase difference: \delta='</span> num2str(floor(delta/pi*180)) <span class="string">'^o}'</span>],<span class="string">'FontSize'</span>,Fs+2,<span class="string">'Color'</span>,teal,<span class="string">'FontName'</span>,<span class="string">'Century Gothic'</span>)
+
+        <span class="comment">% Array locations (For visualization)</span>
+        yoffset=0.04;
+        xloc=-0.02; yloc=0.067; <span class="comment">%(For smaller one)</span>
+        text(xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(2*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(3*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-2*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-3*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+
+
+        sp2=subplot(1,2,2);set(gca,<span class="string">'FontSize'</span>,Fs);
+        d = lambda/4;
+        A = [1 1 1 1 1 1 1]; <span class="comment">% Amplitude of each array antenna</span>
+        Fa=zeros(1,length(theta));
+        <span class="keyword">for</span> i=0:(7-1)
+            temp =  (A(i+1) * exp(-1i*i*delta + 1i*k*(i*d-3*d)*cos(theta)));
+            Fa = Fa + temp;
+        <span class="keyword">end</span>
+        <span class="comment">%    Fa=abs(Fa).^2;</span>
+        Fa=abs(Fa);
+        kk=polar(theta,-Fa/max(Fa));   hold <span class="string">on</span>;
+
+        pcolor(x/max(max(x)),y/max(max(y)),E2all); shading <span class="string">interp</span>;
+        pbaspect([1 1 1]); axis <span class="string">off</span>;
+        ylim([0 1])
+
+        kk=polar(theta,-Fa/max(Fa),<span class="string">'k'</span>);  set(kk,<span class="string">'LineWidth'</span>,2);  hold <span class="string">on</span>;
+        set(sp2,<span class="string">'Position'</span>,[0.50500    0.1100    0.48    0.850])
+        xlabel(<span class="string">'Antenna separation: d=\lambda/4'</span>,<span class="string">'FontSize'</span>,Fs+2,<span class="string">'FontName'</span>,<span class="string">'Century Gothic'</span>)
+        text(-0.85,1.15,[<span class="string">'{\bf Relative phase difference: \delta='</span> num2str(floor(delta/pi*180)) <span class="string">'^o}'</span>],<span class="string">'FontSize'</span>,Fs+2,<span class="string">'Color'</span>,teal,<span class="string">'FontName'</span>,<span class="string">'Century Gothic'</span>)
+
+        <span class="comment">% Array locations (For Full Screen)</span>
+        xloc=-0.02; yloc=0.067; <span class="comment">%(For smaller one)</span>
+        text(xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(2*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(3*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-2*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+        text(-3*d/max(max(x))+xloc,yloc-yoffset,1,<span class="string">'.'</span>,<span class="string">'FontSize'</span>,Fs+12)
+
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'210'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'240'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'270'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'300'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'330'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'180'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'150'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'120'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'90'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'60'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'30'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+        set(findall(gca,<span class="string">'String'</span>,<span class="string">'0'</span>),<span class="string">'String'</span>,<span class="string">' '</span>)
+
+        set(gcf,<span class="string">'Renderer'</span>,<span class="string">'Zbuffer'</span>)
+
+
+        <span class="comment">% - Generate video ----------------</span>
+        <span class="keyword">if</span> (isVideOn == 1)
+            F = getframe(gcf);
+            mov = addframe(mov,F);
+        <span class="keyword">end</span>
+        <span class="comment">% ----------------------------------</span>
+
+        <span class="comment">% Dump to JPEG</span>
+        <span class="keyword">if</span> (isVideOn == 1)
+            set(gcf,<span class="string">'PaperPositionMode'</span>,<span class="string">'auto'</span>);
+            iBufferTime=0;
+            FolderName=<span class="string">'JPEG'</span>;
+            mkdir(FolderName)
+            Name=[FolderName <span class="string">'/Animation_'</span>];
+            disp([<span class="string">'itx= '</span> num2str(itx)]);
+            <span class="keyword">if</span> (itx &lt;10)
+                print (f1, <span class="string">'-djpeg100'</span>, [Name <span class="string">'000'</span> num2str(itx) <span class="string">'.jpg'</span>],<span class="string">'-r150'</span>)
+            <span class="keyword">elseif</span> (itx&gt;=10 &amp;&amp; itx &lt;100)
+                print (f1, <span class="string">'-djpeg100'</span>, [Name <span class="string">'00'</span> num2str(itx) <span class="string">'.jpg'</span>],<span class="string">'-r150'</span>)
+            <span class="keyword">elseif</span> (itx&gt;=100 &amp;&amp; itx &lt;1000)
+                print (f1, <span class="string">'-djpeg100'</span>, [Name <span class="string">'0'</span> num2str(itx) <span class="string">'.jpg'</span>],<span class="string">'-r150'</span>)
+            <span class="keyword">else</span>
+                print (f1, <span class="string">'-djpeg100'</span>, [Name <span class="string">''</span> num2str(itx) <span class="string">'.jpg'</span>],<span class="string">'-r150'</span>)
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        itx=itx+1;
+        pause(0.1);
+</pre><img vspace="5" hspace="5" src="Beamforming_02.png" alt=""> <pre class="codeinput">    <span class="keyword">end</span>
+
+
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">if</span> (isVideOn == 1)
+    mov = close(mov);
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Copyright Notice
+% Copyright (c) 2015, Mehmet E. Yavuz
+% All rights reserved.
+% 
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are
+% met:
+% 
+%     * Redistributions of source code must retain the above copyright
+%       notice, this list of conditions and the following disclaimer.
+%     * Redistributions in binary form must reproduce the above copyright
+%       notice, this list of conditions and the following disclaimer in
+%       the documentation and/or other materials provided with the distribution
+% 
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+% ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+% LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+% CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+% SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+% INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+% CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+% ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+% POSSIBILITY OF SUCH DAMAGE.
+
+clear all; clc;
+set(0,'defaultFigureColor',[1 1 1]) 
+
+%% Simulation parameters 
+freq   = 1e9; % Hz
+c      = 3e8; % free space speed
+lambda = c/freq;
+T      = 1/freq;
+omega  = 2*pi*freq;
+k      = 2*pi/lambda;
+
+Ns = 30;  % Number of samples per wavelength
+ds = lambda/Ns; % Spatial Discretization 
+
+Nt = 35;  % Number of time samples per period
+dt = T/Nt; % Temporal discretization 
+t  = 0:dt:(1*T);  % Increase the number of periods here for longer simulations
+
+R = (0*lambda):ds:(8*lambda);
+Ntheta = 240; % Number of angular discretization 
+dtheta = 2*pi/Ntheta;
+
+theta = 0:dtheta:(2*pi);
+
+deltaAll=0:dtheta:2*pi;
+
+%% Generate Domain 
+x=R.'*cos(theta);
+y=R.'*sin(theta);
+
+%% Output properties 
+outFname='PhasedArray.avi';
+isVideOn =0; 
+if (isVideOn == 1)
+    mov = avifile(outFname,'fps',8,'Compression','None');
+end
+
+teal = [ 0 0.5 0.5]; % maps for unconventional coloring
+origBrownColor=[114/256 70/256 43/256];
+
+
+%% Animate
+itx = 1; % For naming tags
+% for ps=1:length(deltaAll) % Sweep through angles
+for ps=1:1 % Sweep through angles
+    
+    delta=deltaAll(ps);
+    
+%     for it=1:length(t) % Sweep through time
+    for it=1:1 % Sweep through time
+        
+        % REPLACE_WITH_DASH_DASH- First for d=lambda/2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        d = lambda/2;
+        r1y=0;   r1x=-3*d;
+        r2y=0;   r2x=-2*d;
+        r3y=0;   r3x=-d;
+        r4y=0;   r4x=0;
+        r5y=0;   r5x=d;
+        r6y=0;   r6x=2*d;
+        r7y=0;   r7x=3*d;
+        
+        for ix=1:length(R)
+            for iy=1:length(theta)
+                R1=sqrt(  (x(ix,iy)-r1x)^2 + (y(ix,iy)-r1y)^2  );
+                E1(ix,iy) = cos(omega * t(it) - k*R1 + delta*-3)  ;
+                
+                R2=sqrt(  (x(ix,iy)-r2x)^2 + (y(ix,iy)-r2y)^2  );
+                E2(ix,iy) = cos(omega * t(it) - k*R2 + delta*-2)  ;
+                
+                R3=sqrt(  (x(ix,iy)-r3x)^2 + (y(ix,iy)-r3y)^2  );
+                E3(ix,iy) = cos(omega * t(it) - k*R3 + delta*-1)  ;
+                
+                R4=sqrt(  (x(ix,iy)-r4x)^2 + (y(ix,iy)-r4y)^2  );
+                E4(ix,iy) = cos(omega * t(it) - k*R4 + delta*0)  ;
+                
+                R5=sqrt(  (x(ix,iy)-r5x)^2 + (y(ix,iy)-r5y)^2  );
+                E5(ix,iy) = cos(omega * t(it) - k*R5 + delta*1)  ;
+                
+                R6=sqrt(  (x(ix,iy)-r6x)^2 + (y(ix,iy)-r6y)^2  );
+                E6(ix,iy) = cos(omega * t(it) - k*R6 + delta*2)  ;
+                
+                R7=sqrt(  (x(ix,iy)-r7x)^2 + (y(ix,iy)-r7y)^2  );
+                E7(ix,iy) = cos(omega * t(it) - k*R7 + delta*3)  ;
+            end
+        end
+        
+           E=E1+E2+E3+E4+E5+E6+E7;
+        % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+        
+        % REPLACE_WITH_DASH_DASH- First for d=lambda/2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        d = lambda/4;
+        r1y=0;   r1x=-3*d;
+        r2y=0;   r2x=-2*d;
+        r3y=0;   r3x=-d;
+        r4y=0;   r4x=0;
+        r5y=0;   r5x=d;
+        r6y=0;   r6x=2*d;
+        r7y=0;   r7x=3*d;
+        
+        for ix=1:length(R)
+            for iy=1:length(theta)
+                R1=sqrt(  (x(ix,iy)-r1x)^2 + (y(ix,iy)-r1y)^2  );
+                E1(ix,iy) = cos(omega * t(it) - k*R1 + delta*-3)  ;
+                
+                R2=sqrt(  (x(ix,iy)-r2x)^2 + (y(ix,iy)-r2y)^2  );
+                E2(ix,iy) = cos(omega * t(it) - k*R2 + delta*-2)  ;
+                
+                R3=sqrt(  (x(ix,iy)-r3x)^2 + (y(ix,iy)-r3y)^2  );
+                E3(ix,iy) = cos(omega * t(it) - k*R3 + delta*-1)  ;
+                
+                R4=sqrt(  (x(ix,iy)-r4x)^2 + (y(ix,iy)-r4y)^2  );
+                E4(ix,iy) = cos(omega * t(it) - k*R4 + delta*0)  ;
+                
+                R5=sqrt(  (x(ix,iy)-r5x)^2 + (y(ix,iy)-r5y)^2  );
+                E5(ix,iy) = cos(omega * t(it) - k*R5 + delta*1)  ;
+                
+                R6=sqrt(  (x(ix,iy)-r6x)^2 + (y(ix,iy)-r6y)^2  );
+                E6(ix,iy) = cos(omega * t(it) - k*R6 + delta*2)  ;
+                
+                R7=sqrt(  (x(ix,iy)-r7x)^2 + (y(ix,iy)-r7y)^2  );
+                E7(ix,iy) = cos(omega * t(it) - k*R7 + delta*3)  ;
+            end
+        end
+        
+        E2all=E1+E2+E3+E4+E5+E6+E7;
+        % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+        
+        %
+        f1=figure (10); clf; set(gcf,'Color',[1 1 1]); Fs=10;
+        sp1=subplot(1,2,1); set(gca,'FontSize',Fs);
+        d = lambda/2;
+        A = [1 1 1 1 1 1 1]; % (Relative) Amplitude of each array antenna
+        Fa=zeros(1,length(theta));
+        for i=0:(7-1)
+            temp =  (A(i+1) * exp(-1i*i*delta + 1i*k*(i*d-3*d)*cos(theta)));
+            Fa = Fa + temp;
+        end
+        %    Fa=abs(Fa).^2;
+        Fa=abs(Fa);
+        kk=polar(theta,-Fa/max(Fa));   hold on; axis off
+        
+        % Remove ticks
+        set(findall(gca,'String','210'),'String',' ')
+        set(findall(gca,'String','240'),'String',' ')
+        set(findall(gca,'String','270'),'String',' ')
+        set(findall(gca,'String','300'),'String',' ')
+        set(findall(gca,'String','330'),'String',' ')
+        set(findall(gca,'String','180'),'String',' ')
+        set(findall(gca,'String','150'),'String',' ')
+        set(findall(gca,'String','120'),'String',' ')
+        set(findall(gca,'String','90'),'String',' ')
+        set(findall(gca,'String','60'),'String',' ')
+        set(findall(gca,'String','30'),'String',' ')
+        set(findall(gca,'String','0'),'String',' ')
+        
+        %%
+        pcolor(x/max(max(x)),y/max(max(y)),E); shading interp;
+        pbaspect([1 1 1]); %axis off;
+        ylim([0 1])
+        
+        kk=polar(theta,-Fa/max(Fa),'k');  set(kk,'LineWidth',2);  hold on;
+        set(sp1,'Position',[0.0100000    0.1100    0.47    0.850])
+        xlabel(['Antenna separation: d=\lambda/2'],'FontSize',Fs+2,'FontName','Century Gothic')
+        text(-0.85,1.15,['{\bf Relative phase difference: \delta=' num2str(floor(delta/pi*180)) '^o}'],'FontSize',Fs+2,'Color',teal,'FontName','Century Gothic')
+        
+        % Array locations (For visualization)
+        yoffset=0.04;
+        xloc=-0.02; yloc=0.067; %(For smaller one)
+        text(xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(2*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(3*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-2*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-3*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        
+        
+        sp2=subplot(1,2,2);set(gca,'FontSize',Fs);
+        d = lambda/4;
+        A = [1 1 1 1 1 1 1]; % Amplitude of each array antenna
+        Fa=zeros(1,length(theta));
+        for i=0:(7-1)
+            temp =  (A(i+1) * exp(-1i*i*delta + 1i*k*(i*d-3*d)*cos(theta)));
+            Fa = Fa + temp;
+        end
+        %    Fa=abs(Fa).^2;
+        Fa=abs(Fa);
+        kk=polar(theta,-Fa/max(Fa));   hold on;
+        
+        pcolor(x/max(max(x)),y/max(max(y)),E2all); shading interp;
+        pbaspect([1 1 1]); axis off;
+        ylim([0 1])
+        
+        kk=polar(theta,-Fa/max(Fa),'k');  set(kk,'LineWidth',2);  hold on;
+        set(sp2,'Position',[0.50500    0.1100    0.48    0.850])
+        xlabel('Antenna separation: d=\lambda/4','FontSize',Fs+2,'FontName','Century Gothic')
+        text(-0.85,1.15,['{\bf Relative phase difference: \delta=' num2str(floor(delta/pi*180)) '^o}'],'FontSize',Fs+2,'Color',teal,'FontName','Century Gothic')
+        
+        % Array locations (For Full Screen)
+        xloc=-0.02; yloc=0.067; %(For smaller one)
+        text(xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(2*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(3*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-2*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        text(-3*d/max(max(x))+xloc,yloc-yoffset,1,'.','FontSize',Fs+12)
+        
+        set(findall(gca,'String','210'),'String',' ')
+        set(findall(gca,'String','240'),'String',' ')
+        set(findall(gca,'String','270'),'String',' ')
+        set(findall(gca,'String','300'),'String',' ')
+        set(findall(gca,'String','330'),'String',' ')
+        set(findall(gca,'String','180'),'String',' ')
+        set(findall(gca,'String','150'),'String',' ')
+        set(findall(gca,'String','120'),'String',' ')
+        set(findall(gca,'String','90'),'String',' ')
+        set(findall(gca,'String','60'),'String',' ')
+        set(findall(gca,'String','30'),'String',' ')
+        set(findall(gca,'String','0'),'String',' ')
+        
+        set(gcf,'Renderer','Zbuffer')
+        
+        
+        % - Generate video REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        if (isVideOn == 1)
+            F = getframe(gcf);
+            mov = addframe(mov,F);
+        end
+        % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        
+        % Dump to JPEG 
+        if (isVideOn == 1)
+            set(gcf,'PaperPositionMode','auto');
+            iBufferTime=0;
+            FolderName='JPEG';
+            mkdir(FolderName)
+            Name=[FolderName '/Animation_'];
+            disp(['itx= ' num2str(itx)]);
+            if (itx <10)
+                print (f1, '-djpeg100', [Name '000' num2str(itx) '.jpg'],'-r150')
+            elseif (itx>=10 && itx <100)
+                print (f1, '-djpeg100', [Name '00' num2str(itx) '.jpg'],'-r150')
+            elseif (itx>=100 && itx <1000)
+                print (f1, '-djpeg100', [Name '0' num2str(itx) '.jpg'],'-r150')
+            else
+                print (f1, '-djpeg100', [Name '' num2str(itx) '.jpg'],'-r150')
+            end
+        end
+        itx=itx+1;
+        pause(0.1);
+    end
+    
+    
+end
+
+
+
+if (isVideOn == 1) 
+    mov = close(mov); 
+end
+ 
+##### SOURCE END #####
+--></body></html>
